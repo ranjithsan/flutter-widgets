@@ -736,6 +736,27 @@ class _TimeSlotRenderObject extends CustomCalendarRenderObject {
     }
   }
 
+  void _drawDashedLine(Canvas canvas, Size size, paint) {
+    // Chage to your preferred size
+    const int dashWidth = 4;
+    const int dashSpace = 4;
+
+    // Start to draw from left size.
+    // Of course, you can change it to match your requirement.
+    double startX = 0;
+    double y = 10;
+
+    // Repeat drawing until we reach the right edge.
+    // In our example, size.with = 300 (from the SizedBox)
+    while (startX < size.width) {
+      // Draw a small line.
+      canvas.drawLine(Offset(startX, y), Offset(startX + dashWidth, y), paint);
+
+      // Update the starting X
+      startX += dashWidth + dashSpace;
+    }
+  }
+
   void _drawTimeSlots(Canvas canvas, int visibleDatesCount) {
     double y = timeIntervalHeight;
     _linePainter.style = PaintingStyle.stroke;
@@ -743,10 +764,11 @@ class _TimeSlotRenderObject extends CustomCalendarRenderObject {
     _linePainter.strokeCap = StrokeCap.round;
     _linePainter.color = cellBorderColor ?? calendarTheme.cellBorderColor!;
 
-    final double startXPosition = isRTL ? 0 : timeLabelWidth;
+    final double startXPosition = timeLabelWidth;
     final double endXPosition =
         isRTL ? size.width - timeLabelWidth : size.width;
     for (int i = 1; i <= horizontalLinesCount; i++) {
+      // _drawDashedLine(canvas, Size(10000, 0), _linePainter);
       canvas.drawLine(
           Offset(startXPosition, y), Offset(endXPosition, y), _linePainter);
 

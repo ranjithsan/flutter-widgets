@@ -11269,7 +11269,9 @@ class _ViewHeaderViewPainter extends CustomPainter {
   final double textScaleFactor;
   final Paint _circlePainter = Paint();
   final TextPainter _dayTextPainter = TextPainter(),
-      _dateTextPainter = TextPainter();
+      _dateTextPainter = TextPainter(
+          strutStyle:
+              StrutStyle.fromTextStyle(TextStyle(fontWeight: FontWeight.bold)));
   final bool showWeekNumber;
   final bool isMobilePlatform;
   final WeekNumberStyle weekNumberStyle;
@@ -11439,19 +11441,8 @@ class _ViewHeaderViewPainter extends CustomPainter {
           DateFormat(timeSlotViewSettings.dateFormat).format(currentDate);
       final bool isToday = isSameDate(currentDate, today);
       if (isToday) {
-        final Color? todayTextStyleColor = todayTextStyle != null
-            ? todayTextStyle!.color
-            : calendarTheme.todayTextStyle!.color;
-        final Color? todayTextColor =
-            CalendarViewHelper.getTodayHighlightTextColor(
-                todayHighlightColor, todayTextStyle, calendarTheme);
-        dayTextStyle = todayTextStyle != null
-            ? todayTextStyle!.copyWith(
-                fontSize: viewHeaderDayStyle.fontSize, color: todayTextColor)
-            : viewHeaderDayStyle.copyWith(color: todayTextColor);
-        dateTextStyle = todayTextStyle != null
-            ? todayTextStyle!.copyWith(fontSize: viewHeaderDateStyle.fontSize)
-            : viewHeaderDateStyle.copyWith(color: todayTextStyleColor);
+        dayTextStyle = viewHeaderDayStyle.copyWith(color: Colors.white);
+        dateTextStyle = viewHeaderDateStyle.copyWith(color: Colors.white);
       } else {
         dayTextStyle = viewHeaderDayStyle;
         dateTextStyle = viewHeaderDateStyle;
@@ -11462,13 +11453,13 @@ class _ViewHeaderViewPainter extends CustomPainter {
             color: dayTextStyle.color != null
                 ? dayTextStyle.color!.withOpacity(0.38)
                 : calendarTheme.brightness == Brightness.light
-                    ? Colors.black26
+                    ? Colors.white
                     : Colors.white38);
         dateTextStyle = dateTextStyle.copyWith(
             color: dateTextStyle.color != null
                 ? dateTextStyle.color!.withOpacity(0.38)
                 : calendarTheme.brightness == Brightness.light
-                    ? Colors.black26
+                    ? Colors.white
                     : Colors.white38);
       }
 
@@ -11500,10 +11491,6 @@ class _ViewHeaderViewPainter extends CustomPainter {
                   _dateTextPainter.height +
                   inBetweenPadding) /
               2;
-
-      _dayTextPainter.paint(
-          canvas, Offset(xPosition + dayXPosition, yPosition));
-
       if (isToday) {
         _drawTodayCircle(
             canvas,
@@ -11511,6 +11498,9 @@ class _ViewHeaderViewPainter extends CustomPainter {
             yPosition + topPadding + _dayTextPainter.height + inBetweenPadding,
             _dateTextPainter);
       }
+
+      _dayTextPainter.paint(
+          canvas, Offset(xPosition + dayXPosition, yPosition));
 
       if (viewHeaderNotifier.value != null) {
         _addMouseHoverForTimeSlotView(canvas, size, xPosition, yPosition,
@@ -11741,13 +11731,12 @@ class _ViewHeaderViewPainter extends CustomPainter {
       Canvas canvas, double x, double y, TextPainter dateTextPainter,
       {Color? hoveringColor}) {
     _circlePainter.color = (hoveringColor ?? todayHighlightColor)!;
-    const double circlePadding = 5;
-    final double painterWidth = dateTextPainter.width / 2;
-    final double painterHeight = dateTextPainter.height / 2;
+    const double circlePadding = 10;
+    final double painterWidth = dateTextPainter.width;
+    final double painterHeight = dateTextPainter.height;
     final double radius =
         painterHeight > painterWidth ? painterHeight : painterWidth;
-    canvas.drawCircle(Offset(x + painterWidth, y + painterHeight),
-        radius + circlePadding, _circlePainter);
+    canvas.drawCircle(Offset(x + 8, y), radius + circlePadding, _circlePainter);
   }
 
   /// overrides this property to build the semantics information which uses to
@@ -12308,8 +12297,12 @@ class _TimeRulerView extends CustomPainter {
       canvas.drawLine(Offset.zero, Offset(size.width, 0), _linePainter);
       final double timelineViewWidth =
           timeIntervalHeight * horizontalLinesCount;
-      for (int i = 0; i < visibleDates.length; i++) {
+      for (int i = 0; i < 10; i++) {
         date = visibleDates[i];
+        // if (date.minute == 15) {
+        //   _drawSkipTimeLabels(
+        //       canvas, size, xPosition, yPosition, timeTextStyle);
+        // }
         _drawTimeLabels(
             canvas, size, date, hour, xPosition, yPosition, timeTextStyle);
         if (isRTL) {
@@ -12319,6 +12312,7 @@ class _TimeRulerView extends CustomPainter {
         }
       }
     } else {
+      // debugPrint(hour.toString());
       _drawTimeLabels(
           canvas, size, date, hour, xPosition, yPosition, timeTextStyle);
     }
@@ -12343,6 +12337,8 @@ class _TimeRulerView extends CustomPainter {
         canvas.clipRect(
             Rect.fromLTWH(xPosition, 0, timeIntervalHeight, size.height));
         canvas.restore();
+        if (date.minute == timeInterval) {}
+        // _drawDashedLine(canvas, size, _linePainter);
         canvas.drawLine(
             Offset(xPosition, 0), Offset(xPosition, size.height), _linePainter);
       }
@@ -12352,8 +12348,106 @@ class _TimeRulerView extends CustomPainter {
           timeSlotViewSettings.startHour.toInt(), minute.toInt());
       final String time =
           DateFormat(timeSlotViewSettings.timeFormat, locale).format(date);
-      final TextSpan span = TextSpan(
+      TextSpan span = TextSpan(
         text: time,
+        style: timeTextStyle,
+      );
+      if (date.minute == 15 || date.minute == 45) {
+        span = TextSpan(text: "");
+      }
+      // debugPrint("kid ${date.minute}");
+
+      final double cellWidth = isTimelineView ? timeIntervalHeight : size.width;
+
+      _textPainter.text = span;
+      _textPainter.layout(maxWidth: cellWidth);
+      if (isTimelineView && _textPainter.height > size.height) {
+        return;
+      }
+
+      double startXPosition = (cellWidth - _textPainter.width) / 2;
+      if (startXPosition < 0) {
+        startXPosition = 0;
+      }
+
+      if (isTimelineView) {
+        startXPosition = isRTL ? xPosition - _textPainter.width : xPosition;
+      }
+
+      double startYPosition = yPosition - (_textPainter.height / 2);
+
+      if (isTimelineView) {
+        startYPosition = (size.height - _textPainter.height) / 2;
+        startXPosition =
+            isRTL ? startXPosition - padding : startXPosition + padding;
+      }
+
+      _textPainter.paint(canvas, Offset(startXPosition, startYPosition));
+
+      if (!isTimelineView) {
+        final Offset start =
+            Offset(isRTL ? 0 : size.width - (startXPosition / 2), yPosition);
+        final Offset end =
+            Offset(isRTL ? startXPosition / 2 : size.width, yPosition);
+        // canvas.drawLine(start, end, _linePainter);
+        yPosition += timeIntervalHeight;
+        if (yPosition.round() == size.height.round()) {
+          break;
+        }
+      } else {
+        if (isRTL) {
+          xPosition -= timeIntervalHeight;
+        } else {
+          xPosition += timeIntervalHeight;
+        }
+      }
+    }
+  }
+
+  void _drawDashedLine(Canvas canvas, Size size, paint) {
+    // Chage to your preferred size
+    const int dashWidth = 4;
+    const int dashSpace = 4;
+
+    // Start to draw from left size.
+    // Of course, you can change it to match your requirement.
+    double startX = 0;
+    double y = 10;
+
+    // Repeat drawing until we reach the right edge.
+    // In our example, size.with = 300 (from the SizedBox)
+    while (startX < size.width) {
+      // Draw a small line.
+      canvas.drawLine(Offset(startX, y), Offset(startX + dashWidth, y), paint);
+
+      // Update the starting X
+      startX += dashWidth + dashSpace;
+    }
+  }
+
+  void _drawSkipTimeLabels(Canvas canvas, Size size, double xPosition,
+      double yPosition, TextStyle timeTextStyle) {
+    const int padding = 5;
+    final int timeInterval =
+        CalendarViewHelper.getTimeInterval(timeSlotViewSettings);
+
+    /// For timeline view we will draw 24 lines where as in day, week and work
+    /// week view we will draw 23 lines excluding the 12 AM, hence to rectify
+    /// this the i value handled accordingly.
+    for (int i = isTimelineView ? 0 : 1;
+        i <= (isTimelineView ? horizontalLinesCount - 1 : horizontalLinesCount);
+        i++) {
+      if (isTimelineView) {
+        canvas.save();
+        canvas.clipRect(
+            Rect.fromLTWH(xPosition, 0, timeIntervalHeight, size.height));
+        canvas.restore();
+        canvas.drawLine(
+            Offset(xPosition, 0), Offset(xPosition, size.height), _linePainter);
+      }
+
+      final TextSpan span = TextSpan(
+        text: "",
         style: timeTextStyle,
       );
 
@@ -12735,7 +12829,16 @@ class _CurrentTimeIndicator extends CustomPainter {
         viewEndPosition = size.width - viewEndPosition;
         startXPosition = size.width - startXPosition;
       }
-      canvas.drawCircle(Offset(startXPosition, startYPosition), 5, painter);
+      var path = Path();
+      path.moveTo(startXPosition, startYPosition);
+      path.lineTo(startXPosition-10, startYPosition-10);
+      path.lineTo(startXPosition-7, startYPosition);
+      // path.lineTo(startXPosition+5, startYPosition);
+      path.lineTo(startXPosition-10, startYPosition+10);
+      path.close();
+      canvas.drawPath(path, painter);
+
+      // canvas.drawCircle(Offset(startXPosition, startYPosition), 5, painter);
       canvas.drawLine(Offset(viewStartPosition, startYPosition),
           Offset(viewEndPosition, startYPosition), painter);
     }

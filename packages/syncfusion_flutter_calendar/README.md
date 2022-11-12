@@ -1,4 +1,6 @@
-﻿![syncfusion_flutter_calendar_banner](https://cdn.syncfusion.com/content/images/FTControl/Flutter/calender+banner+image.png)
+﻿# Custom Syncfusion fork
+
+![syncfusion_flutter_calendar_banner](https://cdn.syncfusion.com//content/images/FTControl/Flutter/calender+banner+image.png)
 
 # Flutter Calendar
 

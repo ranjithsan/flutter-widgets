@@ -274,7 +274,7 @@ class CalendarViewHelper {
           : calendarTheme.todayTextStyle!.color;
     }
 
-    return todayTextColor;
+    return Colors.white;
   }
 
   /// Get the exact the time from the position and the date time includes

@@ -28,13 +28,17 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SfCalendar(
-      view: CalendarView.month,
-      dataSource: MeetingDataSource(_getDataSource()),
+      view: CalendarView.week,
+      timeSlotViewSettings: TimeSlotViewSettings(
+        timeFormat: "h:mm",
+        timeInterval: Duration(minutes: 15),
+        dayFormat: 'EEE',
+      ),
+      todayHighlightColor: Colors.purple,
+      // dataSource: MeetingDataSource(_getDataSource()),
       // by default the month appointment display mode set as Indicator, we can
       // change the display mode as appointment using the appointment display
       // mode property
-      monthViewSettings: const MonthViewSettings(
-          appointmentDisplayMode: MonthAppointmentDisplayMode.appointment),
     ));
   }
 
