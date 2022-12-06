@@ -28,8 +28,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SfCalendar(
-      view: CalendarView.week,
+      view: CalendarView.month,
       timeSlotViewSettings: TimeSlotViewSettings(
+        timeIntervalHeight: 30,
         timeFormat: "h:mm",
         timeInterval: Duration(minutes: 15),
         dayFormat: 'EEE',

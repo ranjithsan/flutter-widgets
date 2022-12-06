@@ -11736,7 +11736,17 @@ class _ViewHeaderViewPainter extends CustomPainter {
     final double painterHeight = dateTextPainter.height;
     final double radius =
         painterHeight > painterWidth ? painterHeight : painterWidth;
-    canvas.drawCircle(Offset(x + 8, y), radius + circlePadding, _circlePainter);
+    final bool isDayView = CalendarViewHelper.isDayView(
+        view,
+        timeSlotViewSettings.numberOfDaysInView,
+        timeSlotViewSettings.nonWorkingDays,
+        monthViewSettings.numberOfWeeksInView);
+    debugPrint(isDayView.toString());
+    if (isDayView) {
+      canvas.drawCircle(Offset(x + 5, y), radius + 6, _circlePainter);
+      return;
+    }
+    canvas.drawCircle(Offset(x + 5, y), radius + circlePadding, _circlePainter);
   }
 
   /// overrides this property to build the semantics information which uses to
@@ -12831,10 +12841,10 @@ class _CurrentTimeIndicator extends CustomPainter {
       }
       var path = Path();
       path.moveTo(startXPosition, startYPosition);
-      path.lineTo(startXPosition-10, startYPosition-10);
-      path.lineTo(startXPosition-7, startYPosition);
+      path.lineTo(startXPosition - 10, startYPosition - 10);
+      path.lineTo(startXPosition - 7, startYPosition);
       // path.lineTo(startXPosition+5, startYPosition);
-      path.lineTo(startXPosition-10, startYPosition+10);
+      path.lineTo(startXPosition - 10, startYPosition + 10);
       path.close();
       canvas.drawPath(path, painter);
 
