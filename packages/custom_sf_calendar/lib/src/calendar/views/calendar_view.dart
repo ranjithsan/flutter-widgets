@@ -12362,7 +12362,7 @@ class _TimeRulerView extends CustomPainter {
         text: time,
         style: timeTextStyle,
       );
-      if (date.minute == 15 || date.minute == 45) {
+      if (date.minute == 15 || date.minute == 45 || date.minute == 30) {
         span = TextSpan(text: "");
       }
       // debugPrint("kid ${date.minute}");
