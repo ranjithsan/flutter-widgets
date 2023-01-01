@@ -10,9 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
   timezone: 0.8.0
-  syncfusion_flutter_core: ^20.3.47
+  syncfusion_flutter_core: 20.3.47
 
-  syncfusion_flutter_datepicker: ^20.3.47
+  syncfusion_flutter_datepicker: 20.3.47
 
   intl: ">=0.15.0 <0.20.0"
 
