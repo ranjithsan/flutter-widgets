@@ -11743,10 +11743,10 @@ class _ViewHeaderViewPainter extends CustomPainter {
         monthViewSettings.numberOfWeeksInView);
     debugPrint(isDayView.toString());
     if (isDayView) {
-      canvas.drawCircle(Offset(x + 5, y), radius + 6, _circlePainter);
+      canvas.drawCircle(Offset(x + 8, y), radius + 6, _circlePainter);
       return;
     }
-    canvas.drawCircle(Offset(x + 5, y), radius + circlePadding, _circlePainter);
+    canvas.drawCircle(Offset(x + 8, y), radius + circlePadding, _circlePainter);
   }
 
   /// overrides this property to build the semantics information which uses to
